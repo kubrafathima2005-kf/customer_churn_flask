@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Prediction Result · ChurnSense{% endblock %}
+{% block content %}
+<div class="result-wrap">
+  <a class="back-link" href="{{ url_for('index') }}">← Make another prediction</a>
+  <section class="result-card {{ 'risk' if result.churn else 'safe' }}">
+    <p class="eyebrow">PREDICTION COMPLETE</p>
+    <div class="result-icon">{{ '!' if result.churn else '✓' }}</div>
+    <h1>{{ result.label }}</h1>
+    <p class="result-copy">The model estimates a <strong>{{ result.probability }}%</strong> probability that this customer will churn.</p>
+    <div class="risk-meter"><div style="width: {{ result.probability }}%"></div></div>
+    <p class="advice"><strong>Suggested next step:</strong> {{ result.advice }}</p>
+  </section>
+  <section class="summary-card">
+    <h2>Customer summary</h2>
+    <div class="summary-grid">
+      {% for key, value in customer.items() %}<div><small>{{ key|replace('_', ' ')|title }}</small><strong>{{ value }}</strong></div>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

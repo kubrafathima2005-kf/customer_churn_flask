@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Predict Churn · ChurnSense{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">PREDICTIVE RETENTION WORKBENCH</p>
+    <h1>Who might leave next?</h1>
+    <p class="hero-copy">Enter a customer's account and service details. The trained classification pipeline estimates their churn risk in seconds.</p>
+  </div>
+  <div class="model-card">
+    <span class="model-card-label">MODEL SNAPSHOT</span>
+    <strong>{{ (metrics.get('roc_auc', 0) * 100)|round(1) }}%</strong>
+    <small>ROC-AUC on holdout data</small>
+  </div>
+</section>
+{% if error %}<div class="alert">{{ error }}</div>{% endif %}
+<form method="post" action="{{ url_for('predict') }}" class="form-card">
+  <div class="section-heading"><span>01</span><div><h2>Customer profile</h2><p>Basic account information</p></div></div>
+  <div class="form-grid">
+    <label>Gender<select name="gender">{% for item in options.gender %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Senior citizen<select name="senior_citizen"><option value="0">No</option><option value="1">Yes</option></select></label>
+    <label>Partner<select name="partner">{% for item in options.partner %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Dependents<select name="dependents">{% for item in options.dependents %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Tenure (months)<input type="number" name="tenure" min="0" max="100" value="12" required></label>
+  </div>
+  <div class="section-heading"><span>02</span><div><h2>Services</h2><p>Products and support used by this customer</p></div></div>
+  <div class="form-grid">
+    <label>Phone service<select name="phone_service">{% for item in options.phone_service %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Multiple lines<select name="multiple_lines">{% for item in options.multiple_lines %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Internet service<select name="internet_service">{% for item in options.internet_service %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Online security<select name="online_security">{% for item in options.online_security %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Online backup<select name="online_backup">{% for item in options.online_backup %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Device protection<select name="device_protection">{% for item in options.device_protection %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Tech support<select name="tech_support">{% for item in options.tech_support %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Streaming TV<select name="streaming_tv">{% for item in options.streaming_tv %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Streaming movies<select name="streaming_movies">{% for item in options.streaming_movies %}<option>{{ item }}</option>{% endfor %}</select></label>
+  </div>
+  <div class="section-heading"><span>03</span><div><h2>Billing & contract</h2><p>Payment behavior and customer value</p></div></div>
+  <div class="form-grid">
+    <label>Contract<select name="contract">{% for item in options.contract %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Paperless billing<select name="paperless_billing">{% for item in options.paperless_billing %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Payment method<select name="payment_method">{% for item in options.payment_method %}<option>{{ item }}</option>{% endfor %}</select></label>
+    <label>Monthly charges ($)<input type="number" name="monthly_charges" min="0" step="0.01" value="70" required></label>
+    <label>Total charges ($)<input type="number" name="total_charges" min="0" step="0.01" value="840" required></label>
+  </div>
+  <button class="primary-button" type="submit">Predict churn risk <span>→</span></button>
+</form>
+<div class="dataset-note"><strong>About the model:</strong> trained on IBM's public Telco Customer Churn dataset with logistic regression, one-hot encoding, scaling, and class balancing. Dataset rows: {{ metrics.get('dataset_rows', '—') }}.</div>
+{% endblock %}
